@@ -1,9 +1,7 @@
 ### Program Mini-Task Golang :
 
-####  get data with name and age
-
+1.  get data with name and age <br />
     ![getData](./assets/getData.PNG)
 
-####  get all data
-
+2.  get all data <br />
     ![getAllData](./assets/getAllData.PNG)
