@@ -3,15 +3,14 @@ package main
 import (
 	"io/ioutil"
 	"log"
-	"os"
 	"strings"
 
 	pdf "github.com/SebastiaanKlippert/go-wkhtmltopdf"
 )
 
-func main() {
-	var filename = "CustomerAuthorizationMaintenance"
+const filename = "CustomerAuthorizationMaintenance"
 
+func main() {
 	data := map[string]interface{}{
 		"CUSTOMER_NAME":    "ANASTASIA",
 		"MAINTENANCE_TYPE": "UPGRADE LAYANAN",
@@ -20,11 +19,11 @@ func main() {
 		"EMAIL":            "ADMIN@GMAIL.COM",
 	}
 
-	generateHTML(filename, data)
-	generatePDF(filename)
+	content := generateHTML(data)
+	generatePDF(content)
 }
 
-func generateHTML(filename string, data map[string]interface{}) {
+func generateHTML(data map[string]interface{}) string {
 	var (
 		err          error
 		templateByte []byte
@@ -45,23 +44,17 @@ func generateHTML(filename string, data map[string]interface{}) {
 
 	err = ioutil.WriteFile("./html-output/"+filename+".html", []byte(replaced), 0600)
 	checkError(err)
+
+	return replaced
 }
 
-func generatePDF(filename string) {
-	var (
-		err error
-		f   *os.File
-	)
+func generatePDF(content string) {
+	var err error
 
 	pdfg, err := pdf.NewPDFGenerator()
 	checkError(err)
 
-	if f, err = os.Open("./html-output/" + filename + ".html"); f != nil {
-		defer f.Close()
-	}
-	checkError(err)
-
-	pdfg.AddPage(pdf.NewPageReader(f))
+	pdfg.AddPage(pdf.NewPageReader(strings.NewReader(content)))
 
 	pdfg.Orientation.Set(pdf.OrientationPortrait)
 	pdfg.Dpi.Set(400)
